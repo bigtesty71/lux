@@ -1,7 +1,7 @@
 import MemoryStorage from '../../lib/memory/storage';
 
 export default async function handler(req, res) {
-    const slug = 'the-2026-agentic-pivot';
+    const slug = 'beyond-the-screen';
 
     try {
         const storage = new MemoryStorage(999);
