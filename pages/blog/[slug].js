@@ -121,19 +121,18 @@ export async function getServerSideProps(context) {
             data = {};
         }
 
-        // Ensure all values are serializable (no Date objects, no undefined)
+        // Force serialize everything through JSON to strip Date objects etc.
+        const post = JSON.parse(JSON.stringify({
+            title: memory.value || slug,
+            content: data.content || '',
+            heroImage: data.heroImage || null,
+            category: data.category || 'General',
+            publishedAt: data.publishedAt || (memory.updated_at ? String(memory.updated_at) : null),
+            author: data.author || 'CompanionAI'
+        }));
+
         return {
-            props: {
-                post: {
-                    title: memory.value || slug,
-                    content: data.content || '',
-                    heroImage: data.heroImage || null,
-                    category: data.category || 'General',
-                    publishedAt: data.publishedAt || (memory.updated_at ? String(memory.updated_at) : null),
-                    author: data.author || 'CompanionAI'
-                },
-                error: null
-            }
+            props: { post, error: null }
         };
 
     } catch (error) {
