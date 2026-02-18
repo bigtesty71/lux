@@ -1,8 +1,7 @@
-
 import Head from 'next/head';
 import Link from 'next/link';
-import ChatWidget from '../components/ChatWidget';
-import { query } from '../lib/db/connection';
+import ChatWidget from '@/components/ChatWidget.jsx';
+import { query } from '@/lib/db/connection.js';
 
 export default function Home({ posts }) {
   return (

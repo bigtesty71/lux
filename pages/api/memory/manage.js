@@ -1,8 +1,8 @@
 
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]";
-import MemoryStorage from '../../../lib/memory/storage';
-import MemoryRetrieval from '../../../lib/memory/retrieval';
+import MemoryStorage from '@/lib/memory/storage.js';
+import MemoryRetrieval from '@/lib/memory/retrieval.js';
 
 export default async function handler(req, res) {
   const session = await getServerSession(req, res, authOptions);

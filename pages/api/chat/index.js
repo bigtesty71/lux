@@ -1,4 +1,4 @@
-import GemmaMainEngine from '../../../lib/gemma/main-engine';
+import GemmaMainEngine from '@/lib/gemma/main-engine.js';
 
 // Initialize Engine (singleton-ish behavior in lambda)
 const engine = new GemmaMainEngine(process.env.GEMINI_API_KEY);
