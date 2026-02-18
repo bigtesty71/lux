@@ -3,7 +3,7 @@ import React from 'react';
 import Head from 'next/head';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import MemoryStorage from '@/lib/memory/storage.js';
+import MemoryStorage from '../../lib/memory/storage';
 
 export default function BlogPost({ post, error }) {
     if (error) {

@@ -1,4 +1,4 @@
-import { query } from '@/lib/db/connection.js';
+import { query } from '../../../lib/db/connection';
 import bcrypt from 'bcryptjs';
 
 export default async function handler(req, res) {

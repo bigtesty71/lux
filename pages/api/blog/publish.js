@@ -1,6 +1,6 @@
 
-import GemmaSidecar from '@/lib/gemma/sidecar.js';
-import MemoryStorage from '@/lib/memory/storage.js';
+import GemmaSidecar from '../../../lib/gemma/sidecar';
+import MemoryStorage from '../../../lib/memory/storage';
 
 const sidecar = new GemmaSidecar(process.env.GEMINI_API_KEY);
 
