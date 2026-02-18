@@ -10,7 +10,7 @@ export default function BlogPublisher() {
     const [heroImage, setHeroImage] = useState('');
     const [category, setCategory] = useState('');
     const [status, setStatus] = useState('');
-    const [isPublishing, setIsPublishing] = useState(false);
+    const [isTransmitting, setIsTransmitting] = useState(false);
 
     const handleTitleChange = (e) => {
         const val = e.target.value;
@@ -19,8 +19,8 @@ export default function BlogPublisher() {
         setSlug(val.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''));
     };
 
-    const handleDownload = () => {
-        const htmlContent = `<!DOCTYPE html>
+    const generateSimpleHtml = () => {
+        return `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -41,10 +41,12 @@ export default function BlogPublisher() {
     <div className="content">
         ${content.replace(/\n/g, '<br>')} 
     </div>
-    <!-- Note: For full markdown support on your PHP site, you'd need a JS parser or render it server-side. This is a raw dump. -->
 </body>
 </html>`;
+    };
 
+    const handleDownload = () => {
+        const htmlContent = generateSimpleHtml();
         const blob = new Blob([htmlContent], { type: 'text/html' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -53,30 +55,37 @@ export default function BlogPublisher() {
         a.click();
     };
 
-    const handlePublish = async (e) => {
-        e.preventDefault();
-        setIsPublishing(true);
-        setStatus('Analyzing content with Lux...');
+    const handleSendToGateway = async (e) => {
+        if (e) e.preventDefault();
+        setIsTransmitting(true);
+        setStatus('📡 Sending to External Gateway...');
 
         try {
-            const res = await fetch('/api/blog/publish', {
+            const fullHtml = generateSimpleHtml();
+            const res = await fetch('https://lux-3er5.vercel.app/api/blog/publish', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title, slug, content, password, heroImage, category })
+                body: JSON.stringify({
+                    title,
+                    slug,
+                    content: fullHtml,
+                    plainText: content,
+                    password,
+                    category,
+                    heroImage
+                })
             });
 
-            const data = await res.json();
-
-            if (data.success) {
-                setStatus(`✅ Published! Lux has learned this. View at /blog/${slug}`);
-                // Optional: Clear form
+            if (res.ok) {
+                setStatus('✅ SUCCESSFULLY SENT TO GATEWAY!');
             } else {
-                setStatus(`❌ Error: ${data.error}`);
+                const data = await res.json();
+                setStatus(`❌ Gateway Error: ${data.error || res.statusText}`);
             }
         } catch (err) {
-            setStatus(`❌ Network Error: ${err.message}`);
+            setStatus(`❌ Transmission Error: ${err.message}`);
         } finally {
-            setIsPublishing(false);
+            setIsTransmitting(false);
         }
     };
 
@@ -92,11 +101,11 @@ export default function BlogPublisher() {
                         CompanionAI Life Publisher
                     </h1>
                     <p className="text-gray-400 mt-2">
-                        Publish content to the world and to Lux's Memory simultaneously.
+                        Download your post or send it directly to the gateway.
                     </p>
                 </header>
 
-                <form onSubmit={handlePublish} className="space-y-6">
+                <form className="space-y-6">
                     <div className="grid grid-cols-2 gap-6">
                         <div>
                             <label className="block text-sm font-semibold text-gray-400 mb-2">TITLE</label>
@@ -146,12 +155,12 @@ export default function BlogPublisher() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-semibold text-gray-400 mb-2">CONTENT (MARKDOWN)</label>
+                        <label className="block text-sm font-semibold text-gray-400 mb-2">CONTENT (TEXT/HTML)</label>
                         <textarea
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
                             className="w-full h-96 bg-[#1a1625] border border-gray-700 rounded p-4 text-gray-200 font-mono focus:border-[#ff0e59] outline-none resize-y"
-                            placeholder="# Write your thoughts here..."
+                            placeholder="Write your thoughts here..."
                             required
                         />
                     </div>
@@ -163,7 +172,7 @@ export default function BlogPublisher() {
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="bg-[#1a1625] border border-gray-700 rounded p-2 text-white w-48 text-sm"
+                                className="bg-[#1a1625] border border-gray-700 rounded p-2 text-white w-48 text-sm focus:border-[#ff0e59] outline-none"
                                 placeholder="Required"
                                 required
                             />
@@ -172,26 +181,27 @@ export default function BlogPublisher() {
                         <button
                             type="button"
                             onClick={handleDownload}
-                            className="px-6 py-3 rounded-full border border-[#ff0e59] text-[#ff0e59] font-bold hover:bg-[#ff0e59]/10 transition-all"
+                            className="px-6 py-3 rounded-full border border-gray-600 text-gray-300 font-bold hover:bg-gray-800 hover:text-white transition-all text-sm uppercase"
                         >
                             DOWNLOAD HTML
                         </button>
 
                         <button
-                            type="submit"
-                            disabled={isPublishing}
-                            className={`px-8 py-3 rounded-full font-bold text-white transition-all
-                ${isPublishing
+                            type="button"
+                            onClick={handleSendToGateway}
+                            disabled={isTransmitting}
+                            className={`px-8 py-3 rounded-full font-bold text-white transition-all text-sm uppercase
+                                ${isTransmitting
                                     ? 'bg-gray-600 cursor-not-allowed'
                                     : 'bg-gradient-to-r from-[#ff0e59] to-[#ff9140] hover:scale-105 shadow-lg shadow-red-900/50'
                                 }`}
                         >
-                            {isPublishing ? 'Analyzing & Saving...' : 'PUBLISH TO NEURAL NET'}
+                            {isTransmitting ? 'Sending...' : 'SEND TO GATEWAY'}
                         </button>
                     </div>
 
                     {status && (
-                        <div className={`p-4 rounded border ${status.includes('Error') ? 'border-red-500 bg-red-900/20' : 'border-green-500 bg-green-900/20'}`}>
+                        <div className={`p-4 rounded border ${status.includes('Error') || status.includes('Failed') ? 'border-red-500 bg-red-900/20' : 'border-green-500 bg-green-900/20'}`}>
                             {status}
                         </div>
                     )}
