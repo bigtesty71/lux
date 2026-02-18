@@ -106,31 +106,38 @@ export async function getServerSideProps(context) {
         const memory = await storage.getDomainMemoryByKey('blog_post', slug);
 
         if (!memory) {
-            return { props: { error: 'Transmission not found.' } };
+            return { props: { post: null, error: 'Transmission not found.' } };
         }
 
         let data = {};
-        if (memory.structured_data) {
-            data = JSON.parse(memory.structured_data);
-        } else if (memory.context) {
-            data = JSON.parse(memory.context);
+        try {
+            if (memory.structured_data) {
+                data = JSON.parse(memory.structured_data);
+            } else if (memory.context) {
+                data = JSON.parse(memory.context);
+            }
+        } catch (parseErr) {
+            console.error('JSON parse error:', parseErr);
+            data = {};
         }
 
+        // Ensure all values are serializable (no Date objects, no undefined)
         return {
             props: {
                 post: {
-                    title: memory.value,
-                    content: data.content,
+                    title: memory.value || slug,
+                    content: data.content || '',
                     heroImage: data.heroImage || null,
                     category: data.category || 'General',
-                    publishedAt: data.publishedAt || memory.updated_at,
+                    publishedAt: data.publishedAt || (memory.updated_at ? String(memory.updated_at) : null),
                     author: data.author || 'CompanionAI'
-                }
+                },
+                error: null
             }
         };
 
     } catch (error) {
         console.error('Blog Fetch Error:', error);
-        return { props: { error: 'Failed to access neural memory.' } };
+        return { props: { post: null, error: 'Failed to access neural memory: ' + error.message } };
     }
 }
