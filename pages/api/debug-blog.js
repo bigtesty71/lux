@@ -15,6 +15,8 @@ export default async function handler(req, res) {
         return res.status(200).json({
             found: true,
             id: memory.id,
+            key_field: memory.key_field,
+            category: memory.category,
             value: memory.value,
             hasStructuredData: !!memory.structured_data,
             hasContext: !!memory.context,
