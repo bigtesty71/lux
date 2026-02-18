@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+
+@font-face {
+    font-family: 'Komorebi';
+    src: url('/fonts/Komorebi-PersonalUse.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+:root {
+    --font-komorebi: 'Komorebi', sans-serif;
+    --lux-bg: #100c1a;
+    --lux-accent: #ff0e59;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--lux-bg);
+    color: white;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+button {
+    font-family: inherit;
+}
+
+/* Legacy Blog Content Overrides */
+.legacy-post-content {
+    color: #e5e7eb !important;
+}
+
+.legacy-post-content h1,
+.legacy-post-content h2,
+.legacy-post-content h3,
+.legacy-post-content h4,
+.legacy-post-content strong {
+    color: #ffffff !important;
+}
+
+.legacy-post-content p,
+.legacy-post-content span,
+.legacy-post-content div {
+    color: #d1d5db !important;
+}
+
+.legacy-post-content img {
+    border-radius: 0.75rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    max-width: 100%;
+    height: auto;
+}
