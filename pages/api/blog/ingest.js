@@ -29,34 +29,36 @@ export default async function handler(req, res) {
 
         console.log(`🧠 Neural Ingestion: Learning from "${title}"...`);
 
-        // Lux learns from the plain text
+        // 1. Save to Domain Memory (The primary structured record)
+        const saveResult = await storage.saveMemory({
+            type: 'fact',
+            key: slug,
+            value: plainText,
+            category: 'blog_post',
+            source: 'system_ingest',
+            storageTarget: 'domain',
+            context: { title, learned: true }
+        });
+
+        const blogMemoryId = saveResult.memoryId;
+
+        // 2. Lux learns from the plain text (Extract entities/rels)
         const assessment = await sidecar.assessMemory(plainText);
 
-        // Save Knowledge Graph Entities
+        // 3. Save Knowledge Graph Entities linked to the blog post
         if (assessment.entities && assessment.entities.length > 0) {
-            // We save the entities to the graph, using 0 as the trigger memory for now
-            // since the blog itself lives as a static file on Hostinger.
             await storage.saveGraphData(
-                0,
+                blogMemoryId,
                 assessment.entities,
-                assessment.relationships || []
+                assessment.relationships || [],
+                'domain' // Source is now in domain memory
             );
         }
 
-        // Save Experience (Lux's internal insight)
-        // This is the "Text version" stored in her brain.
-        await storage.saveMemory({
-            type: 'insight',
-            content: `KNOWLEDGE GAINED: Blog Post "${title}"\n\n${plainText}`,
-            category: 'transmission_digest',
-            source: 'system_ingest',
-            storageTarget: 'experience',
-            context: { slug, learned: true }
-        });
-
         return res.status(200).json({
             success: true,
-            message: "Neural ingestion complete. Lux has learned the content.",
+            message: "Neural ingestion complete. Lux has learned the content to Domain Memory.",
+            blogMemoryId: blogMemoryId,
             entitiesLearned: assessment.entities?.length || 0
         });
 
