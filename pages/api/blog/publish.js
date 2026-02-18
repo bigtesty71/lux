@@ -4,6 +4,14 @@ import MemoryStorage from '../../../lib/memory/storage';
 
 const sidecar = new GemmaSidecar(process.env.GEMINI_API_KEY);
 
+export const config = {
+    api: {
+        bodyParser: {
+            sizeLimit: '10mb',
+        },
+    },
+};
+
 export default async function handler(req, res) {
     // CORS Configuration
     const origin = req.headers.origin || '*';
