@@ -22,10 +22,10 @@
     + '#lux-bubble:hover { transform:scale(1.1); }'
     + '#lux-bubble img { width:100%;height:100%;object-fit:cover; }'
     // Panel
-    + '#lux-panel { display:none;position:fixed;bottom:96px;right:24px;width:600px;height:520px;background:#1a1128;border-radius:16px;z-index:9999;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.7);border:1px solid rgba(255,255,255,0.06); }'
+    + '#lux-panel { display:none;position:fixed;bottom:96px;right:24px;width:620px;height:520px;background:#1a1128;border-radius:16px;z-index:9999;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.7);border:1px solid rgba(255,255,255,0.06); }'
     + '#lux-panel.open { display:flex; }'
     // Sidebar Image
-    + '.lux-sidebar { width:220px;height:100%;position:relative;flex-shrink:0;border-right:1px solid rgba(255,255,255,0.05); }'
+    + '.lux-sidebar { width:240px;height:100%;position:relative;flex-shrink:0;border-right:1px solid rgba(255,255,255,0.05); }'
     + '.lux-sidebar img { width:100%;height:100%;object-fit:cover; }'
     // Interface Area
     + '.lux-interface { flex:1;display:flex;flex-direction:column;min-width:0; }'
