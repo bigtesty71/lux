@@ -26,36 +26,26 @@ export default async function handler(req, res) {
         const systemMemberId = 1;
         const storage = new MemoryStorage(systemMemberId);
 
-        console.log('📰 Ingesting blog post into Lux memory:', title);
+        console.log('📰 Ingesting blog post into Lux authority memory:', title);
 
-        // 1. Save as a "Fact" in Domain Memory (Structured)
-        await storage.saveMemory({
-            type: 'fact',
-            category: 'blog',
+        // Save as an Authority Record in Domain Memory (Permanent Knowledge)
+        await storage.saveDomainMemory({
+            category: 'blog_authority',
             key: slug || title.toLowerCase().replace(/ /g, '-'),
-            value: JSON.stringify({
+            value: plainText, // Store the WHOLE article in Domain Memory
+            context: {
                 title,
                 category,
                 summary,
-                publishDate: publishDate || new Date().toISOString()
-            }),
-            content: `Blog Post: ${title}`,
+                publishDate: publishDate || new Date().toISOString(),
+                ingest_type: 'zenith_automatic'
+            },
             source: 'blog_ingest'
-        });
-
-        // 2. Save as an "Insight" in Experience Memory (Unstructured - for AI learning)
-        await storage.saveMemory({
-            type: 'insight',
-            category: 'knowledge',
-            content: `New Knowledge Transmission: ${title}\n\nSummary: ${summary}\n\nContent:\n${plainText}`,
-            source: 'blog_ingest',
-            storageTarget: 'experience',
-            confidence: 1.0
         });
 
         return res.status(200).json({
             success: true,
-            message: `Blog post '${title}' ingested successfully. Lux has synthesized the new knowledge.`
+            message: `Blog post '${title}' ingested successfully. Lux has archived the record in Domain Memory.`
         });
 
     } catch (error) {
