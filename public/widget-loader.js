@@ -27,9 +27,6 @@
     // Sidebar Image
     + '.lux-sidebar { width:220px;height:100%;position:relative;flex-shrink:0;border-right:1px solid rgba(255,255,255,0.05); }'
     + '.lux-sidebar img { width:100%;height:100%;object-fit:cover; }'
-    + '.lux-sidebar-overlay { position:absolute;inset:0;background:linear-gradient(to top, #1a1128 0%, transparent 100%); }'
-    + '.lux-sidebar-text { position:absolute;bottom:20px;left:0;right:0;text-align:center;color:#fff;font-family:"Outfit",sans-serif;font-weight:700;font-size:1.2rem;letter-spacing:0.1em;text-transform:uppercase;text-shadow:0 2px 10px rgba(0,0,0,0.5); }'
-    + '.lux-sidebar-text span { color:#ff0e59; }'
     // Interface Area
     + '.lux-interface { flex:1;display:flex;flex-direction:column;min-width:0; }'
     // Header
@@ -112,8 +109,6 @@
     panel.innerHTML = ''
       + '<div class="lux-sidebar">'
       + '  <img src="' + sideImgUrl + '" alt="Lux">'
-      + '  <div class="lux-sidebar-overlay"></div>'
-      + '  <div class="lux-sidebar-text">LUX<span>AI</span></div>'
       + '</div>'
       + '<div class="lux-interface" id="lux-interface"></div>';
 
