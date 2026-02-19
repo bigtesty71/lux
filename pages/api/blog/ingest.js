@@ -26,10 +26,10 @@ export default async function handler(req, res) {
         const systemMemberId = 1;
         const storage = new MemoryStorage(systemMemberId);
 
-        console.log('📰 Ingesting blog post into Lux authority memory:', title);
+        console.log('📰 Ingesting blog post into Lux authority memory via saveDomainMemory:', title);
 
         // Save as an Authority Record in Domain Memory (Permanent Knowledge)
-        await storage.saveDomainMemory({
+        const storageResult = await storage.saveDomainMemory({
             category: 'blog_authority',
             key: slug || title.toLowerCase().replace(/ /g, '-'),
             value: plainText, // Store the WHOLE article in Domain Memory
@@ -43,16 +43,21 @@ export default async function handler(req, res) {
             source: 'blog_ingest'
         });
 
+        res.setHeader('X-Lux-Ingest-Version', '3.1');
+
         return res.status(200).json({
             success: true,
-            message: `Blog post '${title}' ingested successfully. Lux has archived the record in Domain Memory.`
+            message: `Blog post '${title}' ingested successfully. Lux has archived the record in Domain Memory.`,
+            storageTarget: 'domain',
+            id: storageResult.memoryId
         });
 
     } catch (error) {
         console.error('Ingestion error:', error);
         return res.status(500).json({
             error: 'Inertia detected in ingestion cycle.',
-            details: error.message
+            details: error.message,
+            version: '3.1'
         });
     }
 }
