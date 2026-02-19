@@ -107,10 +107,46 @@ async function handleSignup(req, res) {
 
 async function handleGetMember(req, res) {
   try {
-    const { memberId } = req.query;
+    const { memberId, email, password } = req.query;
 
+    // Login by email + password
+    if (email && password) {
+      const members = await query(
+        'SELECT id, email, username, full_name, subscription_tier, metadata FROM members WHERE email = ?',
+        [email]
+      );
+
+      if (members.length === 0) {
+        return res.status(404).json({ error: 'No account found with that email.' });
+      }
+
+      const member = members[0];
+      let meta = {};
+      try { meta = JSON.parse(member.metadata || '{}'); } catch (e) { }
+
+      if (!meta.password) {
+        return res.status(400).json({ error: 'Account has no password set.' });
+      }
+
+      const valid = await bcrypt.compare(password, meta.password);
+      if (!valid) {
+        return res.status(401).json({ error: 'Invalid password.' });
+      }
+
+      return res.status(200).json({
+        member: {
+          id: member.id,
+          email: member.email,
+          username: member.username,
+          full_name: member.full_name,
+          subscription_tier: member.subscription_tier
+        }
+      });
+    }
+
+    // Lookup by member ID
     if (!memberId) {
-      return res.status(400).json({ error: 'Member ID required' });
+      return res.status(400).json({ error: 'Member ID or email+password required' });
     }
 
     const members = await query(
