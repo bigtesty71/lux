@@ -36,14 +36,25 @@ async function handleSignup(req, res) {
     }
 
     // Check if user exists
-    const existing = await query(
-      'SELECT id FROM members WHERE email = ? OR username = ?',
-      [email, username]
+    const existingEmail = await query(
+      'SELECT id FROM members WHERE email = ?',
+      [email]
     );
 
-    if (existing.length > 0) {
+    if (existingEmail.length > 0) {
       return res.status(400).json({
-        error: 'Email or username already exists'
+        error: 'Email already exists. Try logging in instead!'
+      });
+    }
+
+    const existingUser = await query(
+      'SELECT id FROM members WHERE username = ?',
+      [username]
+    );
+
+    if (existingUser.length > 0) {
+      return res.status(400).json({
+        error: 'Username already exists. Please choose a different username.'
       });
     }
 

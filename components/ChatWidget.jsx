@@ -62,6 +62,40 @@ const ChatWidget = ({ siteId, position = 'bottom-right', theme = 'dark' }) => {
     }
   };
 
+  const handleLogin = async (userData) => {
+    try {
+      const { email, password } = userData;
+      const response = await fetch(`/api/members?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`, {
+        method: 'GET',
+      });
+      const data = await response.json();
+
+      if (response.ok && data.member) {
+        const memberInfo = {
+          id: data.member.id,
+          name: data.member.full_name || data.member.username,
+          email: data.member.email
+        };
+        localStorage.setItem('lux_member', JSON.stringify(memberInfo));
+        setMember(memberInfo);
+        setIsAuthenticated(true);
+
+        setMessages([{
+          role: 'assistant',
+          content: `Welcome back, ${memberInfo.name}! I am Lux, and I'll be your guide through the Intelligence Revolution. How may I assist you today?`,
+          timestamp: new Date().toISOString()
+        }]);
+
+        return { success: true };
+      } else {
+        return { success: false, error: data.error || 'Login failed. Please check your credentials.' };
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      return { success: false, error: 'An unexpected error occurred. Please try again or create a new account.' };
+    }
+  };
+
   const handleSendMessage = async (message) => {
     if (!message.trim()) return;
 
@@ -137,7 +171,7 @@ const ChatWidget = ({ siteId, position = 'bottom-right', theme = 'dark' }) => {
 
               <div className="chat-content">
                 {!isAuthenticated ? (
-                  <MemberSignup onSignup={handleSignup} />
+                  <MemberSignup onSignup={handleSignup} onLogin={handleLogin} />
                 ) : (
                   <ChatInterface
                     messages={messages}
